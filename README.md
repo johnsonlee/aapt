@@ -70,7 +70,7 @@ parser.parse("AndroidManifest.xml").accept(new XmlVisitor(System.out, true));
 
 ## Download
 
-AAPT library is avaliable on [Maven Central Repository](http://search.maven.org/)
+AAPT library is available on [Maven Central Repository](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.sdklite%22%20AND%20a%3A%22aapt%22)
 
 ### Maven
 
