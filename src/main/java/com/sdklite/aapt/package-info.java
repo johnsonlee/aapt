@@ -1,5 +1,5 @@
 /**
- * Provides parser and writer for Android assets packaging
+ * Provides utilities for Android asset operating
  * 
  * @author johnsonlee
  */
