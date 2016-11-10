@@ -45,7 +45,7 @@ public class Main {
     }
 
     private static void printVersion() {
-        System.out.printf("Aapt %s (git revision %s)", Build.VERSION, Build.REVISION).println();
+        System.out.printf("aapt version %s (git revision %s)", Build.VERSION, Build.REVISION).println();
     }
 
     private static void printUsage() {

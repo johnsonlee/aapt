@@ -1,15 +1,15 @@
 package com.sdklite.aapt;
 
-import static com.sdklite.aapt.Internal.*;
+import static com.sdklite.aapt.Internal.map;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import com.sdklite.aapt.Internal.Mapper;
 import com.sdklite.aapt.Symbols.Entry;
 
 /**
@@ -20,36 +20,30 @@ import com.sdklite.aapt.Symbols.Entry;
  */
 public final class SymbolParser {
 
-    private final File file;
-
-    public SymbolParser(final String path) throws FileNotFoundException {
-        this(new File(path));
-    }
-
-    public SymbolParser(final File file) throws FileNotFoundException {
-        if (!file.exists()) {
-            throw new FileNotFoundException(file.getAbsolutePath());
-        }
-
-        if (!file.isFile()) {
-            throw new IllegalArgumentException(file + " is not a regular file");
-        }
-
-        this.file = file;
-    }
-
-    public File getFile() {
-        return this.file;
+    /**
+     * Parses the R.txt file
+     * 
+     * @param file
+     *            The R.txt file path
+     * @return An instance of {@link Symbols}
+     * @throws IOException
+     *             If error occurred
+     */
+    public Symbols parse(final String file) throws IOException {
+        return this.parse(new File(file));
     }
 
     /**
-     * Parse the symbols file as {@link Symbols}
+     * Parses the R.txt file
      * 
-     * @return a {@link Symbols}
+     * @param file
+     *            The R.txt file
+     * @return An instance of {@link Symbols}
      * @throws IOException
+     *             If error occurred
      */
-    public Symbols parse() throws IOException {
-        final LineNumberReader reader = new LineNumberReader(new FileReader(this.file));
+    public Symbols parse(final File file) throws IOException {
+        final LineNumberReader reader = new LineNumberReader(new FileReader(file));
 
         try {
             final Symbols symbols = new Symbols();
