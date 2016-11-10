@@ -1,9 +1,8 @@
 package aapt;
 
-import java.io.File;
-import java.io.IOException;
+import static org.junit.Assert.assertTrue;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
 
 import org.junit.Test;
 
@@ -13,7 +12,7 @@ public class AaptTest {
 
     @Test
     public void setApplicationDebuggableShouldBeOk() throws IOException {
-        assertTrue(Aapt.setApplicationDebuggable(new File("/Users/johnson/Desktop/qq-release/AndroidManifest.xml")));
+        assertTrue(Aapt.setApplicationDebuggable("./src/test/data/AndroidManifest.xml"));
     }
 
 }
