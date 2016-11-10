@@ -12,7 +12,7 @@
   <artifactId>aapt</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 
-  <name>Android Assets Package Tool</name>
+  <name>Android Asset Packaging Tool</name>
   <url>http://aapt.sdklite.com</url>
 
   <scm>
