@@ -78,7 +78,7 @@ public class XmlVisitor extends SimpleVisitor {
             this.out.printf(getIndent(this.depth)).printf("<").printf(start.getName());
 
             if (start == chunk.getDocument().getDocumentElement()) {
-                this.out.printf(getIndent(this.depth + 1)).println(ns);
+                this.out.printf(" ").print(ns);
             }
 
             final Iterator<Xml.Attribute> i = start.attributes();

@@ -344,13 +344,13 @@ public class ChunkOutputStream extends FilterOutputStream {
                 writeXmlEndElement((Xml.Element) node);
                 break;
             case ChunkType.XML_END_NAMESPACE:
-                writeXmlNamespace((Xml.EndNamespace) node);
+                writeXmlNamespace((Xml.Namespace) node);
                 break;
             case ChunkType.XML_START_ELEMENT:
                 writeXmlStartElement((Xml.Element) node);
                 break;
             case ChunkType.XML_START_NAMESPACE:
-                writeXmlNamespace((Xml.StartNamespace) node);
+                writeXmlNamespace((Xml.Namespace) node);
                 break;
             default:
                 throw new AaptException(String.format("Unexpected chunk type 0x%04x", node.type));

@@ -444,13 +444,13 @@ final class AssetParser extends StreamEditor {
                 xml.chunks.add(parseXmlEndElement(xml));
                 break;
             case ChunkType.XML_END_NAMESPACE:
-                xml.chunks.add(parseXmlEndNamespace(xml));
+                xml.chunks.add(parseXmlNamespace(xml.new Namespace(ChunkType.XML_END_NAMESPACE)));
                 break;
             case ChunkType.XML_START_ELEMENT:
                 xml.chunks.add(parseXmlStartElement(xml));
                 break;
             case ChunkType.XML_START_NAMESPACE:
-                xml.chunks.add(parseXmlStartNamespace(xml));
+                xml.chunks.add(parseXmlNamespace(xml.new Namespace(ChunkType.XML_START_NAMESPACE)));
                 break;
             }
         }
@@ -465,15 +465,7 @@ final class AssetParser extends StreamEditor {
         return node;
     }
 
-    public Xml.StartNamespace parseXmlStartNamespace(final Xml xml) throws IOException {
-        return parseXmlNamespace(xml.new StartNamespace());
-    }
-
-    public Xml.EndNamespace parseXmlEndNamespace(final Xml xml) throws IOException {
-        return parseXmlNamespace(xml.new EndNamespace());
-    }
-
-    public <T extends Xml.Namespace> T parseXmlNamespace(final T namespace) throws IOException {
+    public Xml.Namespace parseXmlNamespace(final Xml.Namespace namespace) throws IOException {
         parseXmlNode(namespace);
         namespace.prefix = readInt();
         namespace.uri = readInt();

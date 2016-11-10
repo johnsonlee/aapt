@@ -101,7 +101,7 @@ public class Xml extends ChunkHeader {
      * @author johnsonlee
      *
      */
-    public abstract class Namespace extends Node {
+    public final class Namespace extends Node {
 
         int prefix;
         int uri;
@@ -140,34 +140,6 @@ public class Xml extends ChunkHeader {
         public String toString() {
             return "xmlns:" + this.getPrefix() + "=\"" + this.getUri() + "\"";
         }
-    }
-
-    /**
-     * Start namespace
-     * 
-     * @author johnsonlee
-     *
-     */
-    public final class StartNamespace extends Namespace {
-
-        public StartNamespace() {
-            super(ChunkType.XML_START_NAMESPACE);
-        }
-
-    }
-
-    /**
-     * End namespace
-     * 
-     * @author johnsonlee
-     *
-     */
-    public final class EndNamespace extends Namespace {
-
-        public EndNamespace() {
-            super(ChunkType.XML_END_NAMESPACE);
-        }
-
     }
 
     /**
