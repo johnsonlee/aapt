@@ -1,7 +1,8 @@
 package com.sdklite.aapt;
 
 /**
- * Represents a 
+ * Represents a chunk visitor for chunk data reconciling
+ * 
  * @author johnsonlee
  *
  */
@@ -147,13 +148,12 @@ public class ReconcileChunkVisitor implements ChunkVisitor {
     public void visit(final Xml chunk) {
     }
 
-
     @Override
     public void visit(final Xml.Node chunk) {
     }
 
     @Override
-    public void visit(final Xml.ResourceMap resourceMap) {
+    public void visit(final Xml.ResourceMap chunk) {
     }
 
 }

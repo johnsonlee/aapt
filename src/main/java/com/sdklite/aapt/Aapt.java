@@ -17,7 +17,7 @@ import java.util.TreeMap;
 import com.sdklite.aapt.Internal.Filter;
 
 /**
- * This class represents the Android Assets Package Tool
+ * This class represents the Android Assets Packaging Tool
  * 
  * @author johnsonlee
  *

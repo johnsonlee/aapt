@@ -76,7 +76,7 @@ public class ChunkOutputStream extends FilterOutputStream {
             break;
         case ChunkType.XML_END_ELEMENT:
             chunk.accept(new ReconcileChunkVisitor());
-            writeXmlEndElement((Xml.EndElement) chunk);
+            writeXmlEndElement((Xml.Element) chunk);
             break;
         case ChunkType.XML_END_NAMESPACE:
             chunk.accept(new ReconcileChunkVisitor());
@@ -88,7 +88,7 @@ public class ChunkOutputStream extends FilterOutputStream {
             break;
         case ChunkType.XML_START_ELEMENT:
             chunk.accept(new ReconcileChunkVisitor());
-            writeXmlStartElement((Xml.StartElement) chunk);
+            writeXmlStartElement((Xml.Element) chunk);
             break;
         case ChunkType.XML_START_NAMESPACE:
             chunk.accept(new ReconcileChunkVisitor());
@@ -341,13 +341,13 @@ public class ChunkOutputStream extends FilterOutputStream {
                 writeXmlCharData((Xml.CharData) node);
                 break;
             case ChunkType.XML_END_ELEMENT:
-                writeXmlEndElement((Xml.EndElement) node);
+                writeXmlEndElement((Xml.Element) node);
                 break;
             case ChunkType.XML_END_NAMESPACE:
                 writeXmlNamespace((Xml.EndNamespace) node);
                 break;
             case ChunkType.XML_START_ELEMENT:
-                writeXmlStartElement((Xml.StartElement) node);
+                writeXmlStartElement((Xml.Element) node);
                 break;
             case ChunkType.XML_START_NAMESPACE:
                 writeXmlNamespace((Xml.StartNamespace) node);
@@ -371,7 +371,7 @@ public class ChunkOutputStream extends FilterOutputStream {
         writeInt(node.commentIndex);
     }
 
-    private void writeXmlStartElement(final Xml.StartElement node) throws IOException {
+    private void writeXmlStartElement(final Xml.Element node) throws IOException {
         writeXmlNode(node);
         writeShort(node.attributeStart);
         writeShort(node.attributeSize);
@@ -398,7 +398,7 @@ public class ChunkOutputStream extends FilterOutputStream {
         writeInt(node.uri);
     }
 
-    private void writeXmlEndElement(final Xml.EndElement node) throws IOException {
+    private void writeXmlEndElement(final Xml.Element node) throws IOException {
         writeXmlNode(node);
         writeInt(node.ns);
         writeInt(node.name);

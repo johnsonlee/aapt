@@ -1,20 +1,32 @@
 package com.sdklite.aapt;
 
+import static com.sdklite.aapt.Internal.find;
+import static com.sdklite.aapt.Internal.findAll;
+
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import com.sdklite.aapt.Internal.Filter;
 
 import android.util.TypedValue;
 
 /**
- * Binary XML resource
+ * Represents Android binary XML resource
  * 
  * @author johnsonlee
  *
  */
 public class Xml extends ChunkHeader {
 
+    /**
+     * Represents a mapping from strings in the string pool back to resource
+     * identifiers
+     * 
+     * @author johnsonlee
+     *
+     */
     public final class ResourceMap extends ChunkHeader {
 
         final List<Integer> ids = new ArrayList<Integer>();
@@ -29,6 +41,12 @@ public class Xml extends ChunkHeader {
         }
     }
 
+    /**
+     * Basic XML tree node. A single item in the XML document
+     * 
+     * @author johnsonlee
+     *
+     */
     public abstract class Node extends ChunkHeader {
         int lineNumber;
         int commentIndex;
@@ -37,6 +55,11 @@ public class Xml extends ChunkHeader {
             super(type);
         }
 
+        /**
+         * Returns the owner XML document
+         * 
+         * @return the owner XML document
+         */
         public Xml getDocument() {
             return Xml.this;
         }
@@ -47,12 +70,21 @@ public class Xml extends ChunkHeader {
         }
     }
 
+    /**
+     * CDATA section
+     * 
+     * @author johnsonlee
+     *
+     */
     public final class CharData extends Node {
 
         int data;
 
         final ResourceValue typedData = new ResourceValue();
-        
+
+        /**
+         * Default constructor
+         */
         public CharData() {
             super(ChunkType.XML_CDATA);
         }
@@ -63,19 +95,43 @@ public class Xml extends ChunkHeader {
         }
     }
 
+    /**
+     * Namespace section
+     * 
+     * @author johnsonlee
+     *
+     */
     public abstract class Namespace extends Node {
 
         int prefix;
         int uri;
 
+        /**
+         * Instantialize with namespace type
+         * 
+         * @param type
+         *            The namespace type
+         * @see ChunkType#XML_START_NAMESPACE
+         * @see ChunkType#XML_END_NAMESPACE
+         */
         public Namespace(final short type) {
             super(type);
         }
 
+        /**
+         * Returns the prefix
+         * 
+         * @return the prefix
+         */
         public String getPrefix() {
             return pool.getStringAt(this.prefix);
         }
 
+        /**
+         * Returns the URI
+         * 
+         * @return the URI
+         */
         public String getUri() {
             return pool.getStringAt(this.uri);
         }
@@ -86,6 +142,12 @@ public class Xml extends ChunkHeader {
         }
     }
 
+    /**
+     * Start namespace
+     * 
+     * @author johnsonlee
+     *
+     */
     public final class StartNamespace extends Namespace {
 
         public StartNamespace() {
@@ -94,6 +156,12 @@ public class Xml extends ChunkHeader {
 
     }
 
+    /**
+     * End namespace
+     * 
+     * @author johnsonlee
+     *
+     */
     public final class EndNamespace extends Namespace {
 
         public EndNamespace() {
@@ -102,28 +170,16 @@ public class Xml extends ChunkHeader {
 
     }
 
-    public abstract class Element extends Node {
+    /**
+     * XML element
+     * 
+     * @author johnsonlee
+     *
+     */
+    public class Element extends Node {
 
         int ns;
         int name;
-
-        public Element(short type) {
-            super(type);
-        }
-
-        public String getNamespace() {
-            return pool.getStringAt(this.ns);
-        }
-
-        public String getName() {
-            return pool.getStringAt(this.name);
-        }
-
-        public abstract Iterator<Attribute> attributes();
-    }
-
-    public final class StartElement extends Element {
-
         short attributeStart;
         short attributeSize;
         short idIndex;
@@ -131,20 +187,130 @@ public class Xml extends ChunkHeader {
         short styleIndex;
 
         final List<Attribute> attributes = new ArrayList<Attribute>();
-        
-        public StartElement() {
-            super(ChunkType.XML_START_ELEMENT);
+
+        /**
+         * Instantialize with element type
+         * 
+         * @param type
+         *            The element type
+         * @see ChunkType#XML_START_ELEMENT
+         * @see ChunkType#XML_END_ELEMENT
+         */
+        public Element(final short type) {
+            super(type);
         }
 
-        public void insertOrReplaceAttribute(final Attribute attr) {
-            for (final Iterator<Attribute> i = this.attributes.iterator(); i.hasNext();) {
-                final Attribute attribute = i.next();
-                if (attribute.name == attr.name) {
-                    i.remove();
+        /**
+         * Returns the namespace
+         * 
+         * @return the namespace
+         */
+        public String getNamespace() {
+            return pool.getStringAt(this.ns);
+        }
+
+        /**
+         * Returns the name
+         * 
+         * @return the name
+         */
+        public String getName() {
+            return pool.getStringAt(this.name);
+        }
+
+        /**
+         * Returns an iterator of attributes
+         * 
+         * @return an iterator of attributes
+         */
+        public Iterator<Attribute> attributes() {
+            return this.attributes.iterator();
+        }
+
+        /**
+         * Returns the {@code android:id} attribute value
+         * 
+         * @return the {@code android:id} attribute value
+         */
+        public int getId() {
+            for (final Attribute attr : this.attributes) {
+                if ("id".equals(attr.getName())) {
+                    return attr.rawValue;
                 }
             }
 
+            return -1;
+        }
+
+        /**
+         * Appends the specified attribute to the end of the attribute list
+         * 
+         * @param attr
+         *            The attribute to be appended
+         * @throws DuplicateAttributeException
+         *             if the specified attribute already exists
+         */
+        public void addAttribute(final Attribute attr) throws DuplicateAttributeException {
+            final Attribute duplicated = find(this.attributes, new Filter<Attribute>() {
+                @Override
+                public boolean accept(final Attribute it) {
+                    return it.name == attr.name;
+                }
+            });
+
+            if (null != duplicated) {
+                throw new DuplicateAttributeException(attr.getName());
+            }
+
             this.attributes.add(attr);
+        }
+
+        /**
+         * Remote the specified attribute
+         * 
+         * @param attr
+         *            The attribute to be removed
+         * @return true if the attribute exists
+         */
+        public boolean removeAttribute(final Attribute attr) {
+            final Attribute duplicated = find(this.attributes, new Filter<Attribute>() {
+                @Override
+                public boolean accept(final Attribute it) {
+                    return it.name == attr.name;
+                }
+            });
+
+            if (duplicated != null) {
+                return this.attributes.remove(duplicated);
+            }
+
+            return false;
+        }
+
+        /**
+         * Merge the specified attribute into the existing attribute or add it
+         * into the attribute list
+         * 
+         * @param attr
+         *            The attribute to be merged
+         */
+        public void mergeAttribute(final Attribute attr) {
+            final Attribute duplicated = find(this.attributes, new Filter<Attribute>() {
+                @Override
+                public boolean accept(final Attribute it) {
+                    return it.name == attr.name;
+                }
+            });
+
+            if (duplicated != null) {
+                duplicated.ns = attr.ns;
+                duplicated.name = attr.name;
+                duplicated.rawValue = attr.rawValue;
+                duplicated.typedValue.dataType = attr.typedValue.dataType;
+                duplicated.typedValue.data = attr.typedValue.data;
+            } else {
+                this.attributes.add(attr);
+            }
         }
 
         @Override
@@ -163,26 +329,14 @@ public class Xml extends ChunkHeader {
 
             return buffer.toString();
         }
-
-        @Override
-        public Iterator<Attribute> attributes() {
-            return this.attributes.iterator();
-        }
     }
 
-    public final class EndElement extends Element {
-
-        public EndElement() {
-            super(ChunkType.XML_END_ELEMENT);
-        }
-
-        @Override
-        public Iterator<Attribute> attributes() {
-            return Collections.emptyIterator();
-        }
-
-    }
-
+    /**
+     * Attribute of element
+     * 
+     * @author johnsonlee
+     *
+     */
     public final class Attribute {
 
         int ns;
@@ -196,10 +350,20 @@ public class Xml extends ChunkHeader {
         Attribute() {
         }
 
+        /**
+         * Returns the attribute name
+         * 
+         * @return the attribute name
+         */
         public String getName() {
             return pool.getStringAt(this.name);
         }
 
+        /**
+         * Returns the attribute value
+         * 
+         * @return the attribute value
+         */
         public String getValue() {
             switch (this.typedValue.dataType) {
             case ValueType.STRING:
@@ -220,20 +384,51 @@ public class Xml extends ChunkHeader {
         super(XML);
     }
 
-    public List<StartElement> getElementsByName(final String name) {
-        final List<StartElement> elements = new ArrayList<StartElement>();
-        for (final ChunkHeader chunk : this.chunks) {
-            if (!(chunk instanceof StartElement)) {
-                continue;
+    /**
+     * Returns the document element
+     * 
+     * @return the document element
+     */
+    public Element getDocumentElement() {
+        return (Element) find(this.chunks, new Filter<Node>() {
+            @Override
+            public boolean accept(final Node it) {
+                return ChunkType.XML_START_ELEMENT == it.type;
             }
+        });
+    }
 
-            final StartElement element = (StartElement) chunk;
-            if (name.equals(element.getName())) {
-                elements.add(element);
+    /**
+     * Returns all the elements corresponding to the specified name
+     * 
+     * @param name
+     *            The element name
+     * @return a collection of XML element
+     */
+    public List<Element> getElementsByName(final String name) {
+        final List<Node> nodes = findAll(this.chunks, new Filter<Node>() {
+            @Override
+            public boolean accept(final Node it) {
+                return it.type == ChunkType.XML_START_ELEMENT && ((Element) it).getName().equals(name);
             }
-        }
+        });
+        return Arrays.asList(nodes.toArray(new Element[nodes.size()]));
+    }
 
-        return elements;
+    /**
+     * Returns the element with the specified id
+     * 
+     * @param id
+     *            The value of {@code android:id} attribute
+     * @return the element with the specified id or null if not found
+     */
+    public Element getElementById(final int id) {
+        return (Element) find(this.chunks, new Filter<Node>() {
+            @Override
+            public boolean accept(final Node it) {
+                return it.type == ChunkType.XML_START_ELEMENT && ((Element) it).getId() == id;
+            }
+        });
     }
 
     @Override

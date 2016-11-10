@@ -427,37 +427,35 @@ final class AssetParser extends StreamEditor {
     }
 
     public Xml parseXml() throws IOException {
-        return new Xml() {
-            {
-                parseChunkHeader(this);
+        final Xml xml = parseChunkHeader(new Xml());
 
-                while (hasRemaining()) {
-                    switch (expectChunkTypes(ChunkType.STRING_POOL, ChunkType.XML_RESOURCE_MAP, ChunkType.XML_CDATA, ChunkType.XML_END_ELEMENT, ChunkType.XML_END_NAMESPACE, ChunkType.XML_START_ELEMENT, ChunkType.XML_START_NAMESPACE)) {
-                    case ChunkType.STRING_POOL:
-                        this.pool = parseStringPool();
-                        break;
-                    case ChunkType.XML_RESOURCE_MAP:
-                        this.resources = parseXmlResourceMap(this);
-                        break;
-                    case ChunkType.XML_CDATA:
-                        this.chunks.add(parseXmlCharData(this));
-                        break;
-                    case ChunkType.XML_END_ELEMENT:
-                        this.chunks.add(parseXmlEndElement(this));
-                        break;
-                    case ChunkType.XML_END_NAMESPACE:
-                        this.chunks.add(parseXmlEndNamespace(this));
-                        break;
-                    case ChunkType.XML_START_ELEMENT:
-                        this.chunks.add(parseXmlStartElement(this));
-                        break;
-                    case ChunkType.XML_START_NAMESPACE:
-                        this.chunks.add(parseXmlStartNamespace(this));
-                        break;
-                    }
-                }
+        while (hasRemaining()) {
+            switch (expectChunkTypes(ChunkType.STRING_POOL, ChunkType.XML_RESOURCE_MAP, ChunkType.XML_CDATA, ChunkType.XML_END_ELEMENT, ChunkType.XML_END_NAMESPACE, ChunkType.XML_START_ELEMENT, ChunkType.XML_START_NAMESPACE)) {
+            case ChunkType.STRING_POOL:
+                xml.pool = parseStringPool();
+                break;
+            case ChunkType.XML_RESOURCE_MAP:
+                xml.resources = parseXmlResourceMap(xml);
+                break;
+            case ChunkType.XML_CDATA:
+                xml.chunks.add(parseXmlCharData(xml));
+                break;
+            case ChunkType.XML_END_ELEMENT:
+                xml.chunks.add(parseXmlEndElement(xml));
+                break;
+            case ChunkType.XML_END_NAMESPACE:
+                xml.chunks.add(parseXmlEndNamespace(xml));
+                break;
+            case ChunkType.XML_START_ELEMENT:
+                xml.chunks.add(parseXmlStartElement(xml));
+                break;
+            case ChunkType.XML_START_NAMESPACE:
+                xml.chunks.add(parseXmlStartNamespace(xml));
+                break;
             }
-        };
+        }
+
+        return xml;
     }
 
     public <T extends Xml.Node> T parseXmlNode(final T node) throws IOException {
@@ -489,8 +487,8 @@ final class AssetParser extends StreamEditor {
         return element;
     }
 
-    public Xml.StartElement parseXmlStartElement(final Xml xml) throws IOException {
-        final Xml.StartElement element = parseXmlElement(xml.new StartElement());
+    public Xml.Element parseXmlStartElement(final Xml xml) throws IOException {
+        final Xml.Element element = parseXmlElement(xml.new Element(ChunkType.XML_START_ELEMENT));
         element.attributeStart = readShort();
         element.attributeSize = readShort();
         final short attributeCount = readShort();
@@ -505,8 +503,8 @@ final class AssetParser extends StreamEditor {
         return element;
     }
 
-    public Xml.EndElement parseXmlEndElement(final Xml xml) throws IOException {
-        return parseXmlElement(xml.new EndElement());
+    public Xml.Element parseXmlEndElement(final Xml xml) throws IOException {
+        return parseXmlElement(xml.new Element(ChunkType.XML_END_ELEMENT));
     }
 
     public Xml.CharData parseXmlCharData(final Xml xml) throws IOException {
@@ -524,7 +522,7 @@ final class AssetParser extends StreamEditor {
         return resourceMap;
     }
 
-    public Xml.Attribute parseXmlElementAttribute(final Xml.StartElement element) throws IOException {
+    public Xml.Attribute parseXmlElementAttribute(final Xml.Element element) throws IOException {
         final Xml.Attribute attr = element.getDocument().new Attribute();
         attr.ns = readInt();
         attr.name = readInt();

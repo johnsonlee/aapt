@@ -12,7 +12,7 @@ import java.io.PrintWriter;
  * @author johnsonlee
  *
  */
-public class StringPoolVisitor extends SimpleVisitor implements ChunkType, ValueType {
+public class StringPoolVisitor extends SimpleVisitor {
 
     final PrintWriter out;
 

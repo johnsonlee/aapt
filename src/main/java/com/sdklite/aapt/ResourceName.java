@@ -1,7 +1,12 @@
 package com.sdklite.aapt;
 
 /**
- * The resource name
+ * The resource name is consists of three parts:
+ * <ul>
+ * <li>The package name</li>
+ * <li>The resource type name</li>
+ * <li>The entry name</li>
+ * </ul>
  * 
  * @author johnsonlee
  *
@@ -23,6 +28,16 @@ public final class ResourceName {
      */
     public final String name;
 
+    /**
+     * Instantialize with package name, resource type name and entry name
+     * 
+     * @param packageName
+     *            The package name
+     * @param typeName
+     *            The resource type name
+     * @param name
+     *            The resource entry name
+     */
     public ResourceName(final String packageName, final String typeName, final String name) {
         this.packageName = packageName;
         this.typeName = typeName;

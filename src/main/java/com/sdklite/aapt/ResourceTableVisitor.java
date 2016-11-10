@@ -15,7 +15,7 @@ import com.sdklite.aapt.ResourceTable.ValueEntry;
  * @author johnsonlee
  *
  */
-public class ResourceTableVisitor extends SimpleVisitor implements ChunkType, ValueType {
+public class ResourceTableVisitor extends SimpleVisitor {
 
     final PrintWriter out;
 

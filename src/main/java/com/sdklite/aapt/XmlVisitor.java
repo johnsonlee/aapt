@@ -17,7 +17,7 @@ public class XmlVisitor extends SimpleVisitor {
 
     int depth = -1;
 
-    Xml.StartElement element;
+    Xml.Element element;
 
     public XmlVisitor(final PrintWriter out) {
         this.out = out;
@@ -73,9 +73,13 @@ public class XmlVisitor extends SimpleVisitor {
             this.depth++;
 
             final Xml.Namespace ns = getNamespace();
-            final Xml.StartElement start = (Xml.StartElement) chunk;
+            final Xml.Element start = (Xml.Element) chunk;
 
             this.out.printf(getIndent(this.depth)).printf("<").printf(start.getName());
+
+            if (start == chunk.getDocument().getDocumentElement()) {
+                this.out.printf(getIndent(this.depth + 1)).println(ns);
+            }
 
             final Iterator<Xml.Attribute> i = start.attributes();
             if (i.hasNext()) {
@@ -99,7 +103,7 @@ public class XmlVisitor extends SimpleVisitor {
             break;
         }
         case ChunkType.XML_END_ELEMENT: {
-            final Xml.EndElement end = (Xml.EndElement) chunk;
+            final Xml.Element end = (Xml.Element) chunk;
             if (null != this.element && this.element.getName().equals(end.getName())) {
                 this.out.println(" />");
                 this.element = null;
