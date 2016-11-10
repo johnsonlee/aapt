@@ -130,6 +130,114 @@ public class Aapt {
         generateR(new File(r), pkg, symbols);
     }
 
+    /**
+     * Sets the debuggable attribute of application element to true
+     * 
+     * @param manifest
+     *            The AndroidManifest.xml
+     * @return true if successful
+     * @throws IOException
+     *             if error occurred
+     * @throws AaptException
+     *             if parsing error
+     */
+    public static boolean setApplicationDebuggable(final String manifest) throws IOException {
+        return setApplicationDebuggable(new File(manifest));
+    }
+
+    /**
+     * Sets the debuggable attribute of application element to true
+     * 
+     * @param manifest
+     *            The AndroidManifest.xml
+     * @return true if successful
+     * @throws IOException
+     *             if error occurred
+     * @throws AaptException
+     *             if parsing error
+     */
+    public static boolean setApplicationDebuggable(final File manifest) throws IOException {
+        final AssetParser parser = new AssetParser(manifest);
+
+        StringPool pool = null;
+
+        try {
+            final ChunkHeader header = parser.parseChunkHeader();
+            if (ChunkType.XML != header.type) {
+                throw new AaptException(String.format("XML chunk was expected, but 0x%04x found", header.type));
+            }
+
+            while (parser.hasRemaining()) {
+                final ChunkHeader chunk = parser.parseChunkHeader();
+
+                switch (chunk.type) {
+                case ChunkType.STRING_POOL:
+                    parser.seek(parser.tell() - ChunkHeader.MIN_HEADER_SIZE);
+                    pool = parser.parseStringPool();
+                    break;
+                case ChunkType.XML_CDATA:
+                    parser.skip(chunk.size - ChunkHeader.MIN_HEADER_SIZE);
+                    break;
+                case ChunkType.XML_END_ELEMENT:
+                    parser.skip(chunk.size - ChunkHeader.MIN_HEADER_SIZE);
+                    break;
+                case ChunkType.XML_END_NAMESPACE:
+                    parser.skip(chunk.size - ChunkHeader.MIN_HEADER_SIZE);
+                    break;
+                case ChunkType.XML_RESOURCE_MAP:
+                    parser.skip(chunk.size - ChunkHeader.MIN_HEADER_SIZE);
+                    break;
+                case ChunkType.XML_START_ELEMENT: {
+                    final long p = parser.tell();
+
+                    parser.skip(4); // lineNumber
+                    parser.skip(4); // commentIndex
+                    parser.skip(4); // namespaceUri
+
+                    if ("application".equals(pool.getStringAt(parser.readInt()))) {
+                        parser.skip(2); // attributeStart
+                        parser.skip(2); // attributeSize
+
+                        final short attributeCount = parser.readShort();
+
+                        parser.skip(2); // idIndex
+                        parser.skip(2); // classIndex
+                        parser.skip(2); // styleIndex
+
+                        for (int i = 0; i < attributeCount; i++) {
+                            parser.skip(4); // namespace
+
+                            if ("debuggable".equals(pool.getStringAt(parser.readInt()))) {
+                                parser.skip(4); // rawValue
+                                parser.skip(2); // typedValue.size
+                                parser.skip(1); // typedValue.res0
+                                parser.skip(1); // typedValue.dataType
+                                parser.writeInt(0xffffffff); // true
+                                return true;
+                            } else {
+                                parser.skip(4); // rawValue
+                                parser.skip(8); // typedValue
+                            }
+                        }
+                    }
+
+                    parser.seek(p - ChunkHeader.MIN_HEADER_SIZE + chunk.size);
+                    break;
+                }
+                case ChunkType.XML_START_NAMESPACE:
+                    parser.skip(chunk.size - ChunkHeader.MIN_HEADER_SIZE);
+                    break;
+                default:
+                    throw new AaptException(String.format("Unexpected chunk type 0x%04x", chunk.type));
+                }
+            }
+        } finally {
+            parser.close();
+        }
+
+        return false;
+    }
+
     private final File file;
 
     private final Revision buildToolRevision;
