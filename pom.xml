@@ -78,7 +78,9 @@
           <show>public</show>
           <nohelp>true</nohelp>
           <excludePackageNames>android.*</excludePackageNames>
-          <excludes>com/sdklite/aapt/Main.java</excludes>
+          <sourceFileExcludes>
+            <sourceFileExclude>com/sdklite/aapt/Main.java</sourceFileExclude>
+          </sourceFileExcludes>
         </configuration>
         <executions>
           <execution>
