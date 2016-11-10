@@ -14,4 +14,6 @@ public final class Build {
 
     public static final String VERSION = "${project.version}";
 
+    public static final String REVISION = "${buildNumber}";
+
 }
