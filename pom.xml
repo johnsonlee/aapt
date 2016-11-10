@@ -58,7 +58,7 @@
           <excludes>
             <exclude>android</exclude>
             <exclude>android/**</exclude>
-                <exclude>com/sdklite/aapt/Main.java</exclude>
+            <exclude>com/sdklite/aapt/Main.java</exclude>
           </excludes>
         </configuration>
         <executions>
