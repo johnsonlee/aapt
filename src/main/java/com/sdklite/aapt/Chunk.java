@@ -45,6 +45,6 @@ public interface Chunk extends ChunkType {
      * @param visitor
      *            The chunk visitor
      */
-    public void accept(final Visitor visitor);
+    public void accept(final ChunkVisitor visitor);
 
 }

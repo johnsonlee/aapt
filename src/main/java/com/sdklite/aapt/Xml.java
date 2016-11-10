@@ -24,7 +24,7 @@ public class Xml extends ChunkHeader {
         }
 
         @Override
-        public void accept(final Visitor visitor) {
+        public void accept(final ChunkVisitor visitor) {
             visitor.visit(this);
         }
     }
@@ -42,7 +42,7 @@ public class Xml extends ChunkHeader {
         }
 
         @Override
-        public void accept(final Visitor visitor) {
+        public void accept(final ChunkVisitor visitor) {
             visitor.visit(this);
         }
     }
@@ -237,7 +237,7 @@ public class Xml extends ChunkHeader {
     }
 
     @Override
-    public void accept(final Visitor visitor) {
+    public void accept(final ChunkVisitor visitor) {
         visitor.visit(this);
     }
 

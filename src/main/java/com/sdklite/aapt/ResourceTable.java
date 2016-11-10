@@ -152,7 +152,7 @@ public abstract class ResourceTable extends ChunkHeader {
         public abstract StringPool getKeyStringPool();
 
         @Override
-        public void accept(final Visitor visitor) {
+        public void accept(final ChunkVisitor visitor) {
             visitor.visit(this);
         }
 
@@ -717,7 +717,7 @@ public abstract class ResourceTable extends ChunkHeader {
         }
 
         @Override
-        public void accept(final Visitor visitor) {
+        public void accept(final ChunkVisitor visitor) {
             visitor.visit(this);
         }
 
@@ -775,7 +775,7 @@ public abstract class ResourceTable extends ChunkHeader {
         }
 
         @Override
-        public void accept(final Visitor visitor) {
+        public void accept(final ChunkVisitor visitor) {
             visitor.visit(this);
         }
 
@@ -823,7 +823,7 @@ public abstract class ResourceTable extends ChunkHeader {
         }
 
         @Override
-        public void accept(final Visitor visitor) {
+        public void accept(final ChunkVisitor visitor) {
             visitor.visit(this);
         }
 
@@ -891,7 +891,7 @@ public abstract class ResourceTable extends ChunkHeader {
     }
 
     @Override
-    public void accept(final Visitor visitor) {
+    public void accept(final ChunkVisitor visitor) {
         visitor.visit(this);
     }
 

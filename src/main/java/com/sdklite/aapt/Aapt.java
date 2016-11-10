@@ -1,6 +1,6 @@
 package com.sdklite.aapt;
 
-import static com.sdklite.aapt.Internal.*;
+import static com.sdklite.aapt.Internal.find;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,8 +14,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import com.sdklite.aapt.Internal.Filter;
+
 /**
- * The AAPT Utility
+ * This class represents the Android Assets Package Tool
+ * 
+ * @author johnsonlee
+ *
  */
 public class Aapt {
 
@@ -125,60 +130,47 @@ public class Aapt {
         generateR(new File(r), pkg, symbols);
     }
 
-    public static final void main(final String[] args) throws IOException {
-        if (args.length < 1) {
-            printUsage();
-            return;
-        }
-
-        final String cmd = args[0];
-        if ("dump".equals(cmd) || "d".equals(cmd)) {
-            if (args.length < 3) {
-                printUsage();
-                return;
-            }
-
-            final String type = args[1];
-            final ChunkParser parser = new ChunkParser(args[2]);
-            final Visitor visitor;
-
-            if ("resources".equals(type)) {
-                visitor = new ResourcesVisitor(System.out, true);
-            } else if ("strings".equals(type)) {
-                visitor = new StringsVisitor(System.out, true);
-            } else if ("xml".equals(type)) {
-                visitor = new XmlVisitor(System.out, true);
-            } else {
-                visitor = new SimpleVisitor();
-            }
-
-            parser.parse().accept(visitor);
-        } else if ("help".equals(cmd) || "h".equals(cmd) || "?".equals(cmd)) {
-            printUsage();
-        } else {
-            printUsage();
-        }
-    }
-
-    private final File assetDir;
+    private final File file;
 
     private final Revision buildToolRevision;
 
-    public Aapt(final File assetDir, final String buildToolRevision) {
-        this(assetDir, Revision.parseRevision(buildToolRevision));
+    /**
+     * Instantialize with apk file or unzipped apk folder and build tool revision
+     * 
+     * @param file
+     *            The apk file or unzipped apk folder
+     * @param buildToolRevision
+     *            The Android build tool revision
+     */
+    public Aapt(final File file, final String buildToolRevision) {
+        this(file, Revision.parseRevision(buildToolRevision));
     }
 
-    public Aapt(final File assetDir, final Revision buildToolRevision) {
-        this.assetDir = assetDir;
+    /**
+     * Instantialize with apk file or unzipped apk folder and build tool revision
+     * 
+     * @param file
+     *            The apk file or unzipped apk folder
+     * @param buildToolRevision
+     *            The Android build tool revision
+     */
+    public Aapt(final File file, final Revision buildToolRevision) {
+        this.file = file;
         this.buildToolRevision = buildToolRevision;
     }
 
-    public File getAssetDirectory() {
-        return assetDir;
+    /**
+     * Returns the apk file or unzipped folder
+     */
+    public File getFile() {
+        return this.file;
     }
 
+    /**
+     * Returns the Android build tool revision
+     */
     public Revision getBuildToolRevision() {
-        return buildToolRevision;
+        return this.buildToolRevision;
     }
 
     /**
@@ -190,7 +182,7 @@ public class Aapt {
      */
     public Set<String> deleteResources(final Symbols symbols) {
         final Set<String> resources = new HashSet<String>();
-        final File resDir = new File(this.assetDir, "res");
+        final File resDir = new File(this.file, "res");
         final File[] typeDirs = resDir.listFiles();
 
         if (null != typeDirs) {
@@ -237,11 +229,4 @@ public class Aapt {
         return resources;
     }
 
-    private static void printUsage() {
-        System.out.println("Usage: aapt <command> [args]");
-        System.out.println();
-        System.out.println("  Commands:");
-        System.out.println("    - dump [resources, strings, xml]             Dump asset chunks");
-        System.out.println();
-    }
 }

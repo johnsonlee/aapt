@@ -91,6 +91,6 @@ public class ChunkHeader implements Chunk {
     }
 
     @Override
-    public void accept(final Visitor visitor) {
+    public void accept(final ChunkVisitor visitor) {
     }
 }

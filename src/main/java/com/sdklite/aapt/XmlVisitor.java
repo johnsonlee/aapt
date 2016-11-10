@@ -74,10 +74,25 @@ public class XmlVisitor extends SimpleVisitor {
 
             final Xml.Namespace ns = getNamespace();
             final Xml.StartElement start = (Xml.StartElement) chunk;
-            this.out.printf(getIndent()).printf("<").printf(start.getName());
-            for (final Iterator<Xml.Attribute> i = start.attributes(); i.hasNext();) {
-                final Xml.Attribute attr = i.next();
-                this.out.printf(" ").printf(ns.getPrefix()).printf(":").printf(attr.getName()).printf("=\"").printf("%s", attr.getValue()).printf("\"");
+
+            this.out.printf(getIndent(this.depth)).printf("<").printf(start.getName());
+
+            final Iterator<Xml.Attribute> i = start.attributes();
+            if (i.hasNext()) {
+                final Xml.Attribute first = i.next();
+                if (i.hasNext()) {
+                    this.out.printf("\n").printf(getIndent(this.depth + 1));
+                } else {
+                    this.out.printf(" ");
+                }
+
+                this.out.printf(ns.getPrefix()).printf(":").printf(first.getName()).printf("=\"").printf("%s", first.getValue()).printf("\"");
+
+                while (i.hasNext()) {
+                    final Xml.Attribute attr = i.next();
+                    this.out.println();
+                    this.out.printf(getIndent(this.depth + 1)).printf(ns.getPrefix()).printf(":").printf(attr.getName()).printf("=\"").printf("%s", attr.getValue()).printf("\"");
+                }
             }
 
             this.element = start;
@@ -89,7 +104,7 @@ public class XmlVisitor extends SimpleVisitor {
                 this.out.println(" />");
                 this.element = null;
             } else {
-                this.out.printf(getIndent()).printf("</").printf(end.getName()).println(">");
+                this.out.printf(getIndent(this.depth)).printf("</").printf(end.getName()).println(">");
             }
 
             this.depth--;
@@ -101,14 +116,14 @@ public class XmlVisitor extends SimpleVisitor {
         }
     }
 
-    private String getIndent() {
-        final char[] intent = new char[this.depth * 2];
-        Arrays.fill(intent, ' ');
-        return new String(intent);
-    }
-
     public Xml.Namespace getNamespace() {
         return this.namespaces.peek();
+    }
+
+    private static String getIndent(final int depth) {
+        final char[] intent = new char[depth * 4];
+        Arrays.fill(intent, ' ');
+        return new String(intent);
     }
 
 }

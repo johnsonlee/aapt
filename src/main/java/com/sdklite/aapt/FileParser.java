@@ -13,7 +13,7 @@ import java.nio.ByteOrder;
  * @author johnsonlee
  *
  */
-public abstract class AbstractParser {
+public abstract class FileParser {
 
     /**
      * The file to parse
@@ -34,7 +34,7 @@ public abstract class AbstractParser {
      *            The file to parse
      * @throws FileNotFoundException
      */
-    public AbstractParser(final File file) throws FileNotFoundException {
+    public FileParser(final File file) throws FileNotFoundException {
         this(file, ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -48,7 +48,7 @@ public abstract class AbstractParser {
      * @throws FileNotFoundException
      *             if file doesn't exists
      */
-    public AbstractParser(final File file, final ByteOrder byteOrder) throws FileNotFoundException {
+    public FileParser(final File file, final ByteOrder byteOrder) throws FileNotFoundException {
         this.file = file;
         this.raf = new RandomAccessFile(file, "rw");
         this.byteOrder = byteOrder;

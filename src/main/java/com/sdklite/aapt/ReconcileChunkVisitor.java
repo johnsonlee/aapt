@@ -1,6 +1,11 @@
 package com.sdklite.aapt;
 
-public class ChunkReconcileVisitor implements Visitor {
+/**
+ * Represents a 
+ * @author johnsonlee
+ *
+ */
+public class ReconcileChunkVisitor implements ChunkVisitor {
 
     @Override
     public void visit(final StringPool chunk) {

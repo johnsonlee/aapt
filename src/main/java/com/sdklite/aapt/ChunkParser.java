@@ -14,7 +14,7 @@ import java.util.Map;
  * @author johnsonlee
  *
  */
-public class ChunkParser extends AbstractParser implements ChunkType {
+public class ChunkParser extends FileParser implements ChunkType {
 
     /**
      * Instantialize with the specified resource file

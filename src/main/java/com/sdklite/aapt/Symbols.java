@@ -19,24 +19,48 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
- * Representation of text symbols
+ * Represents the resource symbols
  * 
- * @author johnson
+ * @author johnsonlee
  *
  */
 public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.Entry>> {
 
+    /**
+     * Represents the symbol type, e.g. {@code attr}, {@code anim}, {@code color}
+     * 
+     * @author johnsonlee
+     *
+     */
     public static final class Type implements Cloneable {
 
+        /**
+         * The name of symbole type, e.g. {@code attr}, {@code anim},
+         * {@code color}
+         */
         public final String name;
 
         int id;
 
+        /**
+         * Instantialize with type name
+         * 
+         * @param name
+         *            The type name
+         */
         public Type(final String name) {
             this.name = name;
         }
 
-        public Type(String name, int id) {
+        /**
+         * Instantialize with type name and type id
+         * 
+         * @param name
+         *            The type name
+         * @param id
+         *            The type id
+         */
+        public Type(final String name, final int id) {
             this(name);
             this.id = id;
         }
@@ -71,15 +95,43 @@ public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.En
         }
     }
 
+    /**
+     * Represents the entry in symbols 
+     * 
+     * @author johnsonlee
+     *
+     */
     public static class Entry implements Cloneable {
 
+        /**
+         * The value type
+         */
         public final String vtype;
+        /**
+         * The entry type
+         */
         public final Type type;
+        /**
+         * The entry name
+         */
         public final String name;
+        /**
+         * The entry key
+         */
         public final String key;
 
         int value;
 
+        /**
+         * Instantialize with value type, entry type and entry name
+         * 
+         * @param vtype
+         *            The value type
+         * @param type
+         *            The name of entry type
+         * @param name
+         *            The entry name
+         */
         public Entry(final String vtype, final String type, final String name) {
             this.vtype = vtype;
             this.type = new Type(type);
@@ -87,6 +139,16 @@ public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.En
             this.key = type + "/" + name;
         }
 
+        /**
+         * Instantialize with value type, entry type and entry name
+         * 
+         * @param vtype
+         *            The value type
+         * @param type
+         *            The entry type
+         * @param name
+         *            The entry name
+         */
         public Entry(final String vtype, final Type type, final String name) {
             this.vtype = vtype;
             this.type = type;
@@ -94,11 +156,26 @@ public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.En
             this.key = type.name + "/" + name;
         }
 
+        /**
+         * Instantialize with value type, entry type and entry name and entry value
+         * 
+         * @param vtype
+         *            The value type
+         * @param type
+         *            The entry type
+         * @param name
+         *            The entry name
+         * @param value
+         *            The entry value
+         */
         public Entry(final String vtype, final String type, final String name, final int value) {
             this(vtype, new Type(type, (value >> 16) & 0xff), name);
             this.value = value;
         }
 
+        /**
+         * Returns the entry value
+         */
         public int getValue() {
             return this.value;
         }
@@ -145,6 +222,12 @@ public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.En
         }
     }
 
+    /**
+     * Represents the styleable entry in symbols
+     * 
+     * @author johnsonlee
+     *
+     */
     public static class Styleable extends Entry {
 
         final List<Integer> values;
@@ -280,6 +363,8 @@ public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.En
 
     /**
      * Compact the type id and entry id of symbols
+     * 
+     * @return a compacted symbols
      */
     public Symbols compact() {
         // Re-arrange the retained resource id and type id
@@ -339,6 +424,13 @@ public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.En
         return this;
     }
 
+    /**
+     * Determine if the specified type exists in this symbols
+     * 
+     * @param type
+     *            The type name
+     * @return true if only the specified type exists
+     */
     public boolean hasType(final String type) {
         for (final Entry entry : this.entries.values()) {
             if (entry.type.name.equals(type)) {
@@ -349,10 +441,22 @@ public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.En
         return false;
     }
 
+    /**
+     * Put the specified entry into this symbols
+     * 
+     * @param entry
+     *            An symbol entry
+     */
     public void put(final Symbols.Entry entry) {
         this.entries.put(entry.key, entry);
     }
 
+    /**
+     * Remove entry from this symbols by the specified key
+     * 
+     * @param key
+     *            The entry key
+     */
     public void remove(final String key) {
         this.entries.remove(key);
     }
@@ -362,10 +466,20 @@ public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.En
         return this.entries.entrySet().iterator();
     }
 
+    /**
+     * Returns all entries
+     */
     public Collection<Entry> entries() {
         return this.entries.values();
     }
 
+    /**
+     * Returns all entries with the specified type
+     * 
+     * @param type
+     *            The entry type
+     * @return an entry collection
+     */
     public Collection<Entry> entries(final Type type) {
         return findAll(this.entries.values(), new Filter<Entry>() {
             @Override
@@ -375,6 +489,13 @@ public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.En
         });
     }
 
+    /**
+     * Returns all entries with the specified type id
+     * 
+     * @param typeId
+     *            The entry type id
+     * @return an entry collection
+     */
     public Collection<Entry> entries(final int typeId) {
         return findAll(this.entries.values(), new Filter<Entry>() {
             @Override
@@ -384,6 +505,13 @@ public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.En
         });
     }
 
+    /**
+     * Returns all entries with the specified type name
+     * 
+     * @param type
+     *            The entry type name
+     * @return an entry collection
+     */
     public Collection<Entry> entries(final String type) {
         return findAll(this.entries.values(), new Filter<Entry>() {
             @Override
@@ -393,6 +521,9 @@ public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.En
         });
     }
 
+    /**
+     * Return all types of entry
+     */
     public Collection<Type> types() {
         final Set<Type> types = new TreeSet<Type>(new Comparator<Type>() {
             @Override
@@ -416,7 +547,7 @@ public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.En
     }
 
     /**
-     * Retrieve symbol entry with the specified key
+     * Retrieve an entry with the specified key
      * 
      * @param key
      *            The entry key

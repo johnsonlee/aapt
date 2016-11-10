@@ -40,10 +40,11 @@
               <goal>jar</goal>
             </goals>
             <configuration>
-              <excludes>
-                <exclude>android</exclude>
-                <exclude>android/**</exclude>
-              </excludes>
+              <archive>
+                <manifest>
+                  <mainClass>com.sdklite.aapt.Main</mainClass>
+                </manifest>
+              </archive>
             </configuration>
           </execution>
         </executions>
@@ -56,6 +57,7 @@
           <excludes>
             <exclude>android</exclude>
             <exclude>android/**</exclude>
+                <exclude>com/sdklite/aapt/Main.java</exclude>
           </excludes>
         </configuration>
         <executions>
@@ -75,6 +77,7 @@
           <show>public</show>
           <nohelp>true</nohelp>
           <excludePackageNames>android.*</excludePackageNames>
+          <excludes>com/sdklite/aapt/Main.java</excludes>
         </configuration>
         <executions>
           <execution>

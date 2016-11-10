@@ -10,39 +10,40 @@ import java.util.Map;
 import com.sdklite.aapt.ResourceTable.ValueEntry;
 
 /**
+ * A chunk visitor for resource table traversing
  * 
  * @author johnsonlee
  *
  */
-public class ResourcesVisitor extends SimpleVisitor implements ChunkType, ValueType {
+public class ResourceTableVisitor extends SimpleVisitor implements ChunkType, ValueType {
 
     final PrintWriter out;
 
-    public ResourcesVisitor(final PrintWriter out) {
+    public ResourceTableVisitor(final PrintWriter out) {
         this.out = out;
     }
 
-    public ResourcesVisitor(final PrintStream out) {
+    public ResourceTableVisitor(final PrintStream out) {
         this(new PrintWriter(out));
     }
 
-    public ResourcesVisitor(final PrintStream out, final boolean autoFlush) {
+    public ResourceTableVisitor(final PrintStream out, final boolean autoFlush) {
         this(new PrintWriter(out, autoFlush));
     }
 
-    public ResourcesVisitor(final OutputStream out) {
+    public ResourceTableVisitor(final OutputStream out) {
         this(new PrintStream(out));
     }
 
-    public ResourcesVisitor(final OutputStream out, final boolean autoFlush) {
+    public ResourceTableVisitor(final OutputStream out, final boolean autoFlush) {
         this(new PrintStream(out), autoFlush);
     }
 
-    public ResourcesVisitor(final File file) throws FileNotFoundException {
+    public ResourceTableVisitor(final File file) throws FileNotFoundException {
         this(new PrintStream(file));
     }
 
-    public ResourcesVisitor(final String file) throws FileNotFoundException {
+    public ResourceTableVisitor(final String file) throws FileNotFoundException {
         this(new PrintStream(file));
     }
 

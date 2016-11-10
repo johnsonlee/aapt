@@ -10,15 +10,30 @@ import java.util.Map;
 import com.sdklite.aapt.Symbols.Styleable;
 
 /**
+ * Represents a writer for R.txt writting
+ * 
  * @author johnsonlee
  *
  */
 public class SymbolWriter extends FilterWriter {
 
-    protected SymbolWriter(final Writer out) {
+    /**
+     * Instantialize with the specified writer
+     * 
+     * @param out
+     *            The underlying writer
+     */
+    public SymbolWriter(final Writer out) {
         super(out);
     }
 
+    /**
+     * Write the specified symbols into stream
+     * 
+     * @param symbols
+     *            The symbols to be written
+     * @throws IOException
+     */
     public void write(final Symbols symbols) throws IOException {
         for (final Map.Entry<String, Symbols.Entry> entry : symbols.entries.entrySet()) {
             final Symbols.Entry e = entry.getValue();

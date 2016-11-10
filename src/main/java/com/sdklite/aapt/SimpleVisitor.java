@@ -1,6 +1,6 @@
 package com.sdklite.aapt;
 
-public class SimpleVisitor implements Visitor {
+public class SimpleVisitor implements ChunkVisitor {
 
     @Override
     public void visit(final StringPool chunk) {

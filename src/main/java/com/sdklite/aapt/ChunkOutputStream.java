@@ -43,55 +43,55 @@ public class ChunkOutputStream extends FilterOutputStream {
         case ChunkType.NULL:
             throw new AaptException("Unsupported chunk type 0");
         case ChunkType.STRING_POOL:
-            chunk.accept(new ChunkReconcileVisitor());
+            chunk.accept(new ReconcileChunkVisitor());
             write((StringPool) chunk);
             break;
         case ChunkType.TABLE:
-            chunk.accept(new ChunkReconcileVisitor());
+            chunk.accept(new ReconcileChunkVisitor());
             write((ResourceTable) chunk);
             break;
         case ChunkType.TABLE_LIBRARY:
-            chunk.accept(new ChunkReconcileVisitor());
+            chunk.accept(new ReconcileChunkVisitor());
             writeResourceTableLibrary((ResourceTable.Library) chunk);
             break;
         case ChunkType.TABLE_PACKAGE:
-            chunk.accept(new ChunkReconcileVisitor());
+            chunk.accept(new ReconcileChunkVisitor());
             writeResoruceTablePackage((ResourceTable.Package) chunk);
             break;
         case ChunkType.TABLE_TYPE:
-            chunk.accept(new ChunkReconcileVisitor());
+            chunk.accept(new ReconcileChunkVisitor());
             writeResourceTableType((ResourceTable.Type) chunk);
             break;
         case ChunkType.TABLE_TYPE_SPEC:
-            chunk.accept(new ChunkReconcileVisitor());
+            chunk.accept(new ReconcileChunkVisitor());
             writeResourceTableTypeSpec((ResourceTable.TypeSpec) chunk);
             break;
         case ChunkType.XML:
-            chunk.accept(new ChunkReconcileVisitor());
+            chunk.accept(new ReconcileChunkVisitor());
             write((Xml) chunk);
             break;
         case ChunkType.XML_CDATA:
-            chunk.accept(new ChunkReconcileVisitor());
+            chunk.accept(new ReconcileChunkVisitor());
             writeXmlCharData((Xml.CharData) chunk);
             break;
         case ChunkType.XML_END_ELEMENT:
-            chunk.accept(new ChunkReconcileVisitor());
+            chunk.accept(new ReconcileChunkVisitor());
             writeXmlEndElement((Xml.EndElement) chunk);
             break;
         case ChunkType.XML_END_NAMESPACE:
-            chunk.accept(new ChunkReconcileVisitor());
+            chunk.accept(new ReconcileChunkVisitor());
             writeXmlNamespace((Xml.Namespace) chunk);
             break;
         case ChunkType.XML_RESOURCE_MAP:
-            chunk.accept(new ChunkReconcileVisitor());
+            chunk.accept(new ReconcileChunkVisitor());
             writeXmlResourceMap((Xml.ResourceMap) chunk);
             break;
         case ChunkType.XML_START_ELEMENT:
-            chunk.accept(new ChunkReconcileVisitor());
+            chunk.accept(new ReconcileChunkVisitor());
             writeXmlStartElement((Xml.StartElement) chunk);
             break;
         case ChunkType.XML_START_NAMESPACE:
-            chunk.accept(new ChunkReconcileVisitor());
+            chunk.accept(new ReconcileChunkVisitor());
             writeXmlNamespace((Xml.Namespace) chunk);
             break;
         default:

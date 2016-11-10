@@ -1,12 +1,12 @@
 package com.sdklite.aapt;
 
 /**
- * Chunk visitor
+ * Represents the chunk visitor
  * 
  * @author johnsonlee
  *
  */
-public interface Visitor {
+public interface ChunkVisitor {
 
     /**
      * Visit string pool chunk

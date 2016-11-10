@@ -6,35 +6,41 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
-public class StringsVisitor extends SimpleVisitor implements ChunkType, ValueType {
+/**
+ * A chunk visitor for string pool traversing
+ * 
+ * @author johnsonlee
+ *
+ */
+public class StringPoolVisitor extends SimpleVisitor implements ChunkType, ValueType {
 
     final PrintWriter out;
 
-    public StringsVisitor(final PrintWriter out) {
+    public StringPoolVisitor(final PrintWriter out) {
         this.out = out;
     }
 
-    public StringsVisitor(final PrintStream out) {
+    public StringPoolVisitor(final PrintStream out) {
         this(new PrintWriter(out));
     }
 
-    public StringsVisitor(final PrintStream out, final boolean autoFlush) {
+    public StringPoolVisitor(final PrintStream out, final boolean autoFlush) {
         this(new PrintWriter(out, autoFlush));
     }
 
-    public StringsVisitor(final OutputStream out) {
+    public StringPoolVisitor(final OutputStream out) {
         this(new PrintStream(out));
     }
 
-    public StringsVisitor(final OutputStream out, final boolean autoFlush) {
+    public StringPoolVisitor(final OutputStream out, final boolean autoFlush) {
         this(new PrintStream(out), autoFlush);
     }
 
-    public StringsVisitor(final File file) throws FileNotFoundException {
+    public StringPoolVisitor(final File file) throws FileNotFoundException {
         this(new PrintStream(file));
     }
 
-    public StringsVisitor(final String file) throws FileNotFoundException {
+    public StringPoolVisitor(final String file) throws FileNotFoundException {
         this(new PrintStream(file));
     }
 

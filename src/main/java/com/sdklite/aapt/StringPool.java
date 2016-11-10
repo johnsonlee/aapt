@@ -116,7 +116,7 @@ public class StringPool extends ChunkHeader {
     }
 
     @Override
-    public void accept(final Visitor visitor) {
+    public void accept(final ChunkVisitor visitor) {
         visitor.visit(this);
     }
 
