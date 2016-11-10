@@ -67,6 +67,27 @@ parser.parse("AndroidManifest.xml").accept(new XmlVisitor(System.out, true));
     Aapt.generateR("R.java", "com.example", symbols);
     ```
 
+
+## Download
+
+AAPT library is avaliable on [Maven Central Repository](http://search.maven.org/)
+
+### Maven
+
+```xml
+<dependency>
+  <groupId>com.sdklite</groupId>
+  <artifactId>aapt</artifactId>
+  <version>0.0.1</version>
+</dependency>
+```
+
+### Gradle
+
+```gradle
+compile 'com.sdklite:aapt:0.0.1'
+```
+
 ## API Doc
 
 Please see [AAPT API doc](http://aapt.sdklite.com).
