@@ -174,6 +174,23 @@ public class Symbols implements Cloneable, Iterable<Map.Entry<String, Symbols.En
         }
 
         /**
+         * Instantialize with value type, entry type and entry name and entry value
+         * 
+         * @param vtype
+         *            The value type
+         * @param type
+         *            The entry type
+         * @param name
+         *            The entry name
+         * @param value
+         *            The entry value
+         */
+        public Entry(final String vtype, final Type type, final String name, final int value) {
+            this(vtype, type, name);
+            this.value = value;
+        }
+
+        /**
          * Returns the entry value
          */
         public int getValue() {

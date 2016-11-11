@@ -11,7 +11,7 @@ import java.util.Map;
 import com.sdklite.sed.StreamEditor;
 
 /**
- * The Android asset parser
+ * The Android asset file parser
  * 
  * @author johnsonlee
  *

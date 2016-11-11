@@ -24,6 +24,8 @@ import com.sdklite.aapt.Internal.Filter;
  */
 public class Aapt {
 
+    public static final String CLASSES_DEX = "classes.dex";
+
     public static final String RESOURCES_ARSC = "resources.arsc";
 
     public static final String ANDROID_MANIFEST_XML = "AndroidManifest.xml";

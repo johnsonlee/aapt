@@ -30,6 +30,11 @@
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>io</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>sed</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
@@ -45,6 +50,7 @@
           <excludes>
             <exclude>android</exclude>
             <exclude>android/**</exclude>
+            <exclude>com/android/**</exclude>
             <exclude>com/sdklite/aapt/Main.java</exclude>
           </excludes>
         </configuration>
@@ -64,7 +70,7 @@
         <configuration>
           <show>public</show>
           <nohelp>true</nohelp>
-          <excludePackageNames>android.*</excludePackageNames>
+          <excludePackageNames>android.*:com.android.*</excludePackageNames>
           <sourceFileExcludes>
             <sourceFileExclude>com/sdklite/aapt/Main.java</sourceFileExclude>
           </sourceFileExcludes>

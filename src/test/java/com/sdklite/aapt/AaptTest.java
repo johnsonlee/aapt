@@ -1,4 +1,4 @@
-package aapt;
+package com.sdklite.aapt;
 
 import static org.junit.Assert.assertTrue;
 

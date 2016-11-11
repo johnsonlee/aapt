@@ -99,7 +99,8 @@ public class ResourceTableVisitor extends SimpleVisitor {
 
         for (int i = 0, n = chunk.configs.size(); i < n; i++) {
             final ResourceTable.Type type = chunk.configs.get(i);
-            this.out.printf("    config %s:", type.getConfig()).println();
+            final String config = type.config.toString();
+            this.out.printf("    config %s:", config.isEmpty() ? "(default)" : config).println();
 
             if (type.entries.size() > 0) {
                 for (int j = 0; j < type.entries.size(); j++) {

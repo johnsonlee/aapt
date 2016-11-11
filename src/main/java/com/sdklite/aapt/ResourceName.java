@@ -28,6 +28,8 @@ public final class ResourceName {
      */
     public final String name;
 
+    private final String string;
+
     /**
      * Instantialize with package name, resource type name and entry name
      * 
@@ -42,6 +44,7 @@ public final class ResourceName {
         this.packageName = packageName;
         this.typeName = typeName;
         this.name = name;
+        this.string = packageName + ":" + typeName + "/" + name;
     }
 
     @Override
@@ -55,13 +58,16 @@ public final class ResourceName {
         }
 
         final ResourceName rn = (ResourceName) obj;
-        return this.packageName.equals(rn.packageName)
-                && this.typeName.equals(rn.typeName)
-                && this.name.equals(rn.name);
+        return this.string.equals(rn.string);
     }
 
     @Override
     public int hashCode() {
-        return (this.packageName + ":" + this.typeName + "/" + this.name).hashCode();
+        return this.string.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return this.string;
     }
 }

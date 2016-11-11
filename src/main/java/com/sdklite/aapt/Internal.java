@@ -3,6 +3,7 @@ package com.sdklite.aapt;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,7 +39,7 @@ abstract class Internal {
     }
 
     public interface Mapper<E, T> {
-        public T map(final E e);
+        public T map(final E it);
     }
 
     public static final <E, T> List<T> map(final E[] c, final Mapper<E, T> mapper) {
@@ -130,6 +131,17 @@ abstract class Internal {
 
         return null;
     }
+    public static final <T> T find(final Enumeration<T> c, final Filter<? super T> filter) {
+        while (c.hasMoreElements()) {
+            final T t = c.nextElement();
+
+            if (filter.accept(t)) {
+                return t;
+            }
+        }
+
+        return null;
+    }
 
     public static final <T> List<T> findAll(final Iterable<T> c, final Filter<? super T> filter) {
         final List<T> result = new ArrayList<T>();
@@ -143,24 +155,38 @@ abstract class Internal {
         return result;
     }
 
+    public static final <T> List<T> findAll(final Enumeration<T> c, final Filter<? super T> filter) {
+        final List<T> result = new ArrayList<T>();
+
+        while (c.hasMoreElements()) {
+            final T t = c.nextElement();
+
+            if (filter.accept(t)) {
+                result.add(t);
+            }
+        }
+
+        return result;
+    }
+
     public boolean isValidId(final int resId) {
         return resId != 0;
     }
 
     public static int getType(int resId) {
-        return ((resId >> 16) & 0xff) - 1;
+        return ((resId >> 16) & 0xff);
     }
 
     public static int getPackage(final int resId) {
-        return ((resId >> 24) & 0xff) - 1;
+        return ((resId >> 24) & 0xff);
     }
 
     public static int getEntry(final int resId) {
         return (resId & 0xffff);
     }
 
-    public static int makeId(final int packageId, final int type, final int entry) {
-        return (((packageId + 1) & 0xff) << 24) | (((type + 1) & 0xff) << 16) | (entry & 0xffff);
+    public static int makeId(final int packageId, final int typeId, final int entryId) {
+        return (((packageId) & 0xff) << 24) | (((typeId) & 0xff) << 16) | (entryId & 0xffff);
     }
 
     public static String hexlify(final byte[] value) {

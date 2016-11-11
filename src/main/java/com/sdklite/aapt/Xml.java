@@ -301,6 +301,21 @@ public class Xml extends ChunkHeader {
 
             return buffer.toString();
         }
+
+        public String getAttribute(final String name) {
+            final Attribute attr = find(this.attributes, new Filter<Attribute>() {
+                @Override
+                public boolean accept(final Attribute it) {
+                    return it.getName().equals(name);
+                }
+            });
+
+            if (null != attr) {
+                return attr.getValue();
+            }
+
+            return null;
+        }
     }
 
     /**
@@ -343,6 +358,11 @@ public class Xml extends ChunkHeader {
             default:
                 return TypedValue.coerceToString(this.typedValue.dataType, this.typedValue.data);
             }
+        }
+
+        @Override
+        public String toString() {
+            return this.getName() + "=\"" + getValue() + "\"";
         }
     }
 

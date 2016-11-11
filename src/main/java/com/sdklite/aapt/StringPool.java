@@ -1,5 +1,7 @@
 package com.sdklite.aapt;
 
+import static com.sdklite.aapt.Internal.*;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -113,6 +115,15 @@ public class StringPool extends ChunkHeader {
 
     public boolean isUTF8() {
         return 0 != (this.flags & FLAG_UTF8);
+    }
+
+    public List<String> strings() {
+        return map(this.strings, new Mapper<IndexedEntry<String>, String>() {
+            @Override
+            public String map(final IndexedEntry<String> e) {
+                return e.value;
+            }
+        });
     }
 
     @Override

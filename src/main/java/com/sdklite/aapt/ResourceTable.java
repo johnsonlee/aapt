@@ -542,7 +542,7 @@ public abstract class ResourceTable extends ChunkHeader {
                 }
             }
 
-            return res.length() <= 0 ? "(default)" : res.toString();
+            return res.length() <= 0 ? "" : res.toString();
         }
     }
 
@@ -721,6 +721,18 @@ public abstract class ResourceTable extends ChunkHeader {
             visitor.visit(this);
         }
 
+        @Override
+        public String toString() {
+            final String config = this.config.toString();
+            final StringBuilder builder = new StringBuilder();
+            builder.append(getPackage().getTypeStringPool().getStringAt(this.id - 1));
+
+            if (null != config && !config.isEmpty()) {
+                builder.append("-").append(config);
+            }
+
+            return builder.toString();
+        }
     }
 
     /**
@@ -869,7 +881,7 @@ public abstract class ResourceTable extends ChunkHeader {
             throw new AaptException(String.format("Unknown resource package index %d", packageIndex));
         }
 
-        final ResourceTable.Package pkg = group.getPackage(Internal.getPackage(resId) + 1);
+        final ResourceTable.Package pkg = group.getPackage(Internal.getPackage(resId));
         final ResourceTable.TypeSpec spec = pkg.specs.get(typeIndex);
 
         for (final ResourceTable.Type type : spec.configs) {
@@ -887,12 +899,21 @@ public abstract class ResourceTable extends ChunkHeader {
     }
 
     public int getPackageIndex(final int resId) {
-        return this.packageMap[Internal.getPackage(resId) + 1] - 1;
+        return this.packageMap[Internal.getPackage(resId)] - 1;
     }
 
     @Override
     public void accept(final ChunkVisitor visitor) {
         visitor.visit(this);
+    }
+
+    public ResourceTable.Package getPackage() {
+        final ResourceTable.Package[] pkgs = getPackages();
+        if (pkgs.length > 0) {
+            return pkgs[0];
+        }
+
+        return null;
     }
 
     public ResourceTable.Package[] getPackages() {
