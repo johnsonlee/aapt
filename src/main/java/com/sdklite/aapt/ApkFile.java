@@ -199,7 +199,7 @@ public class ApkFile {
         }
     }
 
-    public final class ClassIterator implements Iterator<String> {
+    private final class ClassIterator implements Iterator<String> {
 
         final Iterator<Dex> dexes;
 
