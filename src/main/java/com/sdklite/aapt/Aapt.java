@@ -159,7 +159,7 @@ public class Aapt {
      *             if parsing error
      */
     public static boolean setApplicationDebuggable(final File manifest) throws IOException {
-        final AssetParser parser = new AssetParser(manifest);
+        final AssetEditor parser = new AssetEditor(manifest);
 
         StringPool pool = null;
 

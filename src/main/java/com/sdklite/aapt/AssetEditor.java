@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import com.sdklite.sed.StreamEditor;
 
@@ -16,9 +15,9 @@ import com.sdklite.sed.StreamEditor;
  * @author johnsonlee
  *
  */
-final class AssetParser extends StreamEditor {
+public final class AssetEditor extends StreamEditor {
 
-    public AssetParser(final File file) throws FileNotFoundException {
+    public AssetEditor(final File file) throws FileNotFoundException {
         super(file, ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -32,7 +31,9 @@ final class AssetParser extends StreamEditor {
     public Chunk parse() throws IOException {
         seek(0);
 
-        switch (peekShort()) {
+        final short type = peekShort();
+
+        switch (type) {
         case ChunkType.STRING_POOL:
             return parseStringPool();
         case ChunkType.TABLE:
@@ -40,10 +41,21 @@ final class AssetParser extends StreamEditor {
         case ChunkType.XML:
             return parseXml();
         default:
-            throw new AaptException(String.format("Unsupported chunk type 0x%04x", ChunkType.NULL));
+            throw new AaptException(String.format("Unsupported chunk type 0x%04x", type));
         }
     }
 
+    /**
+     * Asserts if the next chunk is expected types
+     * 
+     * @param expected
+     *            The expected chunk types
+     * @return the chunk type
+     * @throws IOException
+     *             if error occurred
+     * @throws AaptException
+     *             if the next chunk is not the expected types
+     */
     public short expectChunkTypes(final short... expected) throws IOException {
         final short actural = peekShort();
 
@@ -56,6 +68,15 @@ final class AssetParser extends StreamEditor {
         throw new AaptException(String.format("Expect chunk type %s, but 0x%04x found", Internal.hexlify(expected), actural));
     }
 
+    /**
+     * Parses the mininum chunk header
+     * 
+     * @param chunk
+     *            A chunk
+     * @return the chunk to be parsed
+     * @throws IOException
+     *             if error occurred
+     */
     public <T extends ChunkHeader> T parseChunkHeader(final T chunk) throws IOException {
         final short type = readShort();
         if (chunk.type != type) {
@@ -75,6 +96,14 @@ final class AssetParser extends StreamEditor {
         return chunk;
     }
 
+    /**
+     * Determine if there is more chunks
+     * 
+     * @return true if the remaining number of bytes not lower than a minimum
+     *         chunk header
+     * @throws IOException
+     *             if error occurred
+     */
     public boolean hasMoreChunks() throws IOException {
         if (remaining() < Chunk.MIN_HEADER_SIZE) {
             return false;
@@ -89,10 +118,24 @@ final class AssetParser extends StreamEditor {
         }
     }
 
+    /**
+     * Parses the next chunk header
+     * 
+     * @return a chunk header
+     * @throws IOException
+     *             if error occurred
+     */
     public ChunkHeader parseChunkHeader() throws IOException {
         return parseChunkHeader(new ChunkHeader(peekShort()));
     }
 
+    /**
+     * Parses the next resource table
+     * 
+     * @return a resource table
+     * @throws IOException
+     *             if error occurred
+     */
     public ResourceTable parseResourceTable() throws IOException {
         final long p = tell();
 
@@ -160,6 +203,15 @@ final class AssetParser extends StreamEditor {
         };
     }
 
+    /**
+     * Parses the next package
+     * 
+     * @param table
+     *            The resource table which the package belongs to
+     * @return the next package
+     * @throws IOException
+     *             if error occurred
+     */
     public ResourceTable.Package parsePackage(final ResourceTable table) throws IOException {
         return table.new Package() {
 
@@ -207,6 +259,15 @@ final class AssetParser extends StreamEditor {
         };
     }
 
+    /**
+     * Parses the next resource type specification
+     * 
+     * @param pkg
+     *            The package which the type spec belongs to
+     * @return the next resource type specification
+     * @throws IOException
+     *             if error occurred
+     */
     public ResourceTable.TypeSpec parseResourceTableTypeSpec(final ResourceTable.Package pkg) throws IOException {
         final ResourceTable table = pkg.getResourceTable();
         return table.new TypeSpec() {
@@ -240,6 +301,15 @@ final class AssetParser extends StreamEditor {
         };
     }
 
+    /**
+     * Parses the next resource type
+     * 
+     * @param pkg
+     *            The package which the type belongs to
+     * @return the next resource type
+     * @throws IOException
+     *             if error occurred
+     */
     public ResourceTable.Type parseResourceTableType(final ResourceTable.Package pkg) throws IOException {
         final long p = tell();
         final ResourceTable table = pkg.getResourceTable();
@@ -348,6 +418,13 @@ final class AssetParser extends StreamEditor {
         };
     }
 
+    /**
+     * Parses the next resource entry
+     * 
+     * @return the next resource entry
+     * @throws IOException
+     *             if error occurred
+     */
     public ResourceTable.Entry parseResourceTableEntry() throws IOException {
         final ResourceTable.Entry entry = new ResourceTable.Entry() {
             {
@@ -361,6 +438,15 @@ final class AssetParser extends StreamEditor {
                 : parseResourceTableValueEntry(entry);
     }
 
+    /**
+     * Parses the next resource map entry
+     * 
+     * @param base
+     *            The resource entry
+     * @return the next resource map entry
+     * @throws IOException
+     *             if error occurred
+     */
     public ResourceTable.MapEntry parseResourceTableMapEntry(final ResourceTable.Entry base) throws IOException {
         final ResourceTable.MapEntry entry = new ResourceTable.MapEntry(base);
         entry.parent = readInt();
@@ -372,6 +458,13 @@ final class AssetParser extends StreamEditor {
         return entry;
     }
 
+    /**
+     * Parses the next resource map
+     * 
+     * @return the next resource map
+     * @throws IOException
+     *             if error occurred
+     */
     public ResourceTable.Map parseResourceTableMap() throws IOException {
         final ResourceTable.Map map = new ResourceTable.Map();
         map.name = readInt();
@@ -379,10 +472,26 @@ final class AssetParser extends StreamEditor {
         return map;
     }
 
+    /**
+     * Parses the next resource value
+     * 
+     * @return the next resource value
+     * @throws IOException
+     *             if error occurred
+     */
     public ResourceValue parseResourceValue() throws IOException {
         return parseResourceValue(new ResourceValue());
     }
 
+    /**
+     * Parses resource value
+     * 
+     * @param value
+     *            The parsed resource value
+     * @return the parsed resource value
+     * @throws IOException
+     *             if error occurred
+     */
     public ResourceValue parseResourceValue(final ResourceValue value) throws IOException {
         value.size = readShort();
         value.res0 = readByte();
@@ -391,12 +500,30 @@ final class AssetParser extends StreamEditor {
         return value;
     }
 
+    /**
+     * Parses the next resource value entry
+     * 
+     * @param base
+     *            The resource entry
+     * @return the next resource value entry
+     * @throws IOException
+     *             if error occurred
+     */
     public ResourceTable.ValueEntry parseResourceTableValueEntry(final ResourceTable.Entry base) throws IOException {
         final ResourceTable.ValueEntry entry = new ResourceTable.ValueEntry(base);
         parseResourceValue(entry.value);
         return entry;
     }
 
+    /**
+     * Parses the next resource library
+     * 
+     * @param pkg
+     *            The package which the library belongs to
+     * @return the next resource library
+     * @throws IOException
+     *             if error occurred
+     */
     public ResourceTable.Library parseResourceTableLibrary(final ResourceTable.Package pkg) throws IOException {
         final ResourceTable table = pkg.getResourceTable();
         return table.new Library() {
@@ -410,6 +537,13 @@ final class AssetParser extends StreamEditor {
         };
     }
 
+    /**
+     * Parses the next package name
+     * 
+     * @return the parsed package name
+     * @throws IOException
+     *             if error occurred
+     */
     public String parsePackageName() throws IOException {
         final long p = tell();
         final StringBuilder name = new StringBuilder();
@@ -426,6 +560,13 @@ final class AssetParser extends StreamEditor {
         return name.toString();
     }
 
+    /**
+     * Parses the next XML document
+     * 
+     * @return the parsed XML document
+     * @throws IOException
+     *             if error occurred
+     */
     public Xml parseXml() throws IOException {
         final Xml xml = parseChunkHeader(new Xml());
 
@@ -458,6 +599,15 @@ final class AssetParser extends StreamEditor {
         return xml;
     }
 
+    /**
+     * Parses the XML node
+     * 
+     * @param node
+     *            The parsed XML node
+     * @return the parsed XML node
+     * @throws IOException
+     *             if error occurred
+     */
     public <T extends Xml.Node> T parseXmlNode(final T node) throws IOException {
         parseChunkHeader(node);
         node.lineNumber = readInt();
@@ -465,6 +615,15 @@ final class AssetParser extends StreamEditor {
         return node;
     }
 
+    /**
+     * Parses the XML namespace
+     * 
+     * @param namespace
+     *            The parsed XML namespace
+     * @return the parsed XML namespace
+     * @throws IOException
+     *             if error occurred
+     */
     public Xml.Namespace parseXmlNamespace(final Xml.Namespace namespace) throws IOException {
         parseXmlNode(namespace);
         namespace.prefix = readInt();
@@ -472,6 +631,15 @@ final class AssetParser extends StreamEditor {
         return namespace;
     }
 
+    /**
+     * Parses the XML element
+     * 
+     * @param element
+     *            The parsed XML element
+     * @return the parsed XML element
+     * @throws IOException
+     *             if error occurred
+     */
     public <T extends Xml.Element> T parseXmlElement(final T element) throws IOException {
         parseXmlNode(element);
         element.ns = readInt();
@@ -479,6 +647,15 @@ final class AssetParser extends StreamEditor {
         return element;
     }
 
+    /**
+     * Parses the start XML element
+     * 
+     * @param xml
+     *            The XML documemnt
+     * @return the parsed XML element
+     * @throws IOException
+     *             if error occurred
+     */
     public Xml.Element parseXmlStartElement(final Xml xml) throws IOException {
         final Xml.Element element = parseXmlElement(xml.new Element(ChunkType.XML_START_ELEMENT));
         element.attributeStart = readShort();
@@ -495,10 +672,28 @@ final class AssetParser extends StreamEditor {
         return element;
     }
 
+    /**
+     * Parses the next end XML element
+     * 
+     * @param xml
+     *            The XML document
+     * @return the next end XML element
+     * @throws IOException
+     *             if error occurred
+     */
     public Xml.Element parseXmlEndElement(final Xml xml) throws IOException {
         return parseXmlElement(xml.new Element(ChunkType.XML_END_ELEMENT));
     }
 
+    /**
+     * Parses the next CDATA section
+     * 
+     * @param xml
+     *            The XML document
+     * @return the next CDATA section
+     * @throws IOException
+     *             if error occurred
+     */
     public Xml.CharData parseXmlCharData(final Xml xml) throws IOException {
         final Xml.CharData cdata = parseXmlNode(xml.new CharData());
         cdata.data = readInt();
@@ -506,6 +701,15 @@ final class AssetParser extends StreamEditor {
         return cdata;
     }
 
+    /**
+     * Parses the next resource map
+     * 
+     * @param xml
+     *            The XML document
+     * @return the next resource map
+     * @throws IOException
+     *             if error occurred
+     */
     public Xml.ResourceMap parseXmlResourceMap(final Xml xml) throws IOException {
         final Xml.ResourceMap resourceMap = parseChunkHeader(xml.new ResourceMap());
         for (int i = 0, n = (resourceMap.size - resourceMap.headerSize) / 4; i < n; i++) {
@@ -514,6 +718,15 @@ final class AssetParser extends StreamEditor {
         return resourceMap;
     }
 
+    /**
+     * Parses the next XML element attribute
+     * 
+     * @param element
+     *            The XML element which the attribute belongs to
+     * @return the next XML element attribute
+     * @throws IOException
+     *             if error occurred
+     */
     public Xml.Attribute parseXmlElementAttribute(final Xml.Element element) throws IOException {
         final Xml.Attribute attr = element.getDocument().new Attribute();
         attr.ns = readInt();
@@ -523,6 +736,13 @@ final class AssetParser extends StreamEditor {
         return attr;
     }
 
+    /**
+     * Parses the next string pool
+     * 
+     * @return the next tring pool
+     * @throws IOException
+     *             if error occurred
+     */
     public StringPool parseStringPool() throws IOException {
         final long p = tell();
 
@@ -572,6 +792,13 @@ final class AssetParser extends StreamEditor {
 
     }
 
+    /**
+     * Parses the next string pool span
+     * 
+     * @return the next string pool span
+     * @throws IOException
+     *             if error occurred
+     */
     public StringPool.Span parseStringPoolSpan() throws IOException {
         final StringPool.Span span = new StringPool.Span();
         span.name = readInt() & 0xffffffff;
@@ -583,6 +810,13 @@ final class AssetParser extends StreamEditor {
         return span;
     }
 
+    /**
+     * Parses the next UTF-8 string
+     * 
+     * @return an UTF-8 string
+     * @throws IOException
+     *             if error occurred
+     */
     public String parseUtf8String() throws IOException {
         int nchars = readByte() & 0xff;
         if ((nchars & 0x80) != 0) {
@@ -606,6 +840,13 @@ final class AssetParser extends StreamEditor {
         return StandardCharsets.UTF_8.decode(str).toString();
     }
 
+    /**
+     * Parses the next UTF-16 string
+     * 
+     * @return an UTF-8 string
+     * @throws IOException
+     *             if error occurred
+     */
     public String parseUtf16String() throws IOException {
         int nchars = readShort();
         if ((nchars & 0x8000) != 0) {
@@ -624,22 +865,4 @@ final class AssetParser extends StreamEditor {
         return StandardCharsets.UTF_16LE.decode(data).toString();
     }
 
-    public void rewritePackageId(final int pp, final Map<Integer, Integer> idMap) throws IOException {
-        final long pos = tell();
-        int id = readInt();
-
-        if ((id >> 24) != Constants.APP_PACKAGE_ID) {
-            return;
-        }
-
-        if (null != idMap && idMap.containsKey(id)) {
-            id = idMap.get(id);
-        } else {
-            id = ((pp & 0xff) << 24) | (id & 0x00ffffff);
-        }
-
-        seek(pos);
-        writeInt(id);
-    }
-    
 }

@@ -11,16 +11,31 @@ import java.io.IOException;
  */
 public class ChunkParser {
 
-    public ChunkParser() {
-    }
-
+    /**
+     * Parses the specified file as asset chunk
+     * 
+     * @param file
+     *            The asset file path
+     * @return a chunk
+     * @throws IOException
+     *             if error occurred
+     */
     public <T extends Chunk> T parse(final String file) throws IOException {
         return this.parse(new File(file));
     }
 
+    /**
+     * Parses the specified file as asset chunk
+     * 
+     * @param file
+     *            The asset file
+     * @return a chunk
+     * @throws IOException
+     *             if error occurred
+     */
     @SuppressWarnings("unchecked")
     public <T extends Chunk> T parse(final File file) throws IOException {
-        final AssetParser parser = new AssetParser(file);
+        final AssetEditor parser = new AssetEditor(file);
 
         try {
             return (T) parser.parse();

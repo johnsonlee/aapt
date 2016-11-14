@@ -67,7 +67,7 @@ public class ApkFile {
             IOUtil.closeQuietly(out);
         }
 
-        final AssetParser parser = new AssetParser(tmp);
+        final AssetEditor parser = new AssetEditor(tmp);
 
         try {
             return parser.parseXml();
@@ -97,7 +97,7 @@ public class ApkFile {
             IOUtil.closeQuietly(out);
         }
 
-        final AssetParser parser = new AssetParser(tmp);
+        final AssetEditor parser = new AssetEditor(tmp);
 
         try {
             return parser.parseResourceTable();
