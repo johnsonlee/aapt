@@ -67,6 +67,16 @@ parser.parse("AndroidManifest.xml").accept(new XmlVisitor(System.out, true));
     Aapt.generateR("R.java", "com.example", symbols);
     ```
 
+- Inspect APK
+
+    ```java
+    ApkFile apk = new ApkFile("app.apk");
+    Dex main = apk.getMainDex();
+    Iterable<Dex> dexes = apk.dexes();
+    Iterable<String> classes = apk.classes();
+    Xml manifest = apk.getAndroidManifest();
+    ResourceTable table = apk.getResourceTable();
+    ```
 
 ## Download
 
