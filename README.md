@@ -100,4 +100,4 @@ compile 'com.sdklite:aapt:0.0.1'
 
 ## API Doc
 
-Please see [AAPT API doc](http://aapt.sdklite.com).
+Please see [http://aapt.sdklite.com](http://aapt.sdklite.com).
